@@ -1,9 +1,11 @@
 extends HTTPRequest
 
 var request_id := 0
+var Error
 
 func _ready():
 	.set_download_chunk_size(16777216)
+	self.add_child(preload("./Error.gd").new())
 
 func close():
 	.cancel_request()
@@ -14,11 +16,12 @@ func default_headers():
 	]
 
 func network_error(error, message, url = null):
+	push_error("[Network Error]: " + message)
 	return {
 		"url": url,
 		"type": error,
 		"message": message,
-		"error": error,
+		"error": $Error.string_name(error),
 	}
 
 func fetch(url: String, headers = default_headers(), data = null, type = null, id = null):
